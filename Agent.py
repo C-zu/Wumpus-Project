@@ -1,7 +1,7 @@
 from enum import Enum
 import copy
 import numpy as np
-from Percept import get_neighbors
+from Percept import *
 from config import *
 
 class Action(Enum):
@@ -86,7 +86,6 @@ def Move_Forward(agent_pos, agent_direction, cave, score):
     agent_pos1 = map_pos(agent_pos)
     new_pos1 = map_pos((new_x,new_y))
     # Kiểm tra thử có khi di chuyển có va vào tường không
-    state_bump = False
     if (new_x > 10 or new_x <1) or (new_y > 10 or new_y < 1):
         return agent_pos, cave, score, True
     else:
@@ -104,7 +103,7 @@ def Move_Forward(agent_pos, agent_direction, cave, score):
             cave1[new_pos1[0],new_pos1[1]] += 'A'
         # Cập nhật điểm
         score -= 10
-        return new_pos, cave1, score, state_bump
+        return new_pos, cave1, score, False
         
 def Shoot(KB, pos, cave, n, score):
     '''
@@ -125,11 +124,11 @@ def Shoot(KB, pos, cave, n, score):
             cave1[pos1[0],pos1[1]] = cave1[pos1[0],pos1[1]].replace('W','')
             list_w.append((pos1[0],pos1[1]))
 
-        list_stenchs = get_neighbors(pos,n)
+        list_stenchs,_ = get_neighbors(pos,n)
 
         for stench in list_stenchs:
             del_stench_flag = True
-            check_if_wumpus = get_neighbors(stench,n)
+            check_if_wumpus,_ = get_neighbors(stench,n)
             for if_wumpus in check_if_wumpus:
                 if_wumpus1 = map_pos(if_wumpus)
                 if cave1[if_wumpus1[0],if_wumpus1[1]] == 'W':
@@ -178,3 +177,28 @@ def Grab(agent_pos, cave, score):
 def Climb(score):
     score += 10
     return score
+
+def Determine_Cave_Size(dict_bump):
+    '''
+        Xác định kích thước bản đồ dựa trên Bump
+        Tham số:
+            - Dictionary chứa số lần Bump với item là pos và value là direction.
+    '''
+    unique_items = {}
+    for key, value in dict_bump.items():
+        if value not in unique_items.values():
+            unique_items[key] = value
+            if value == 'R':
+                max_x = key[0]
+            elif value == 'U':
+                max_y = key[1]
+            elif value == 'L':
+                min_x =key[0]
+            else:
+                max_y = key[1]
+    size_x = max_x - min_x + 1
+    size_y = max_y - min_x + 1
+    return size_x, size_y
+
+# Tí thêm code là chỗ nào neighbor ít hơn 4 thì chỗ đó chính là góc, khi ở đó thì ta sẽ xoay hướng để kiểm tra
+# Bump nhanh hơn.

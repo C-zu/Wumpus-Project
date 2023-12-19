@@ -94,6 +94,7 @@ def create_map(cave):
 def main():
     cave = read_map('map/map1.txt')
     KB, heuristic, path, list_agent_pos, cave1, score = Solve_Wumpus_World((1, 1), 'R', 10, cave)
+    print(score)
     for i in range(len(path)):
         if type(path[i]) is tuple:
             path[i] = map_pos(path[i])
@@ -118,9 +119,9 @@ def main():
                 current_path = path[path_i]
                 screen.blit(agent, (get_map_pos_y(10, CELL_SIZE) + path[path_i][1] * CELL_SIZE,
                                     get_map_pos_x(10, CELL_SIZE) + path[path_i][0] * CELL_SIZE))
-                time.sleep(0.5)
+                time.sleep(0.05)
             elif type(path[path_i]) is dict:
-                time.sleep(1)
+                time.sleep(0.1)
                 if path[path_i]['wumpus_pos']:
                     for i in path[path_i]['wumpus_pos']:
                         screen.blit(wumpus_die, (get_map_pos_y(10, CELL_SIZE) + i[1] * CELL_SIZE,

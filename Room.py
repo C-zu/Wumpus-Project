@@ -1,4 +1,3 @@
-from Percept import get_neighbors
 from config import *
 from Percept import *
 import copy
@@ -27,15 +26,14 @@ def Info_Room(pos, cave):
 
 def Literals_Room(info_room, pos):
     x, y = pos
-    info_map = {'Stench': '1', 'Breeze': '2', 'Gold': '3', 'Pit': '4', 'Wumpus': '5'}
+    info_map = {'Stench': '1', 'Breeze': '2','Pit': '4', 'Wumpus': '5'}
     list_literals = []
-    for name, value in info_room.items():
-        if value == 1:
-            literal = [int(info_map[name] + str(x) + str(y))]
-            list_literals.append(literal)
-        elif value == 0:
-            literal = [- int(info_map[name] + str(x) + str(y))]
-            list_literals.append(literal)
+    for name, value in info_map.items():
+        if info_room[name] == 1:
+            literal = [int(value + str(x) + str(y))]
+        else:
+            literal = [- int(value + str(x) + str(y))]
+        list_literals.append(literal)
     return list_literals
 
 
@@ -68,19 +66,16 @@ def Identify_Safe_Rooms( KB, agent_pos, cave, n):
     # Xác định các ô an toàn để đi
     safe_rooms = []
     pit_rooms = []
-    wumpus_rooms = []
-    neighbors = get_neighbors(agent_pos, n)
+    neighbors, out_of_caves = get_neighbors(agent_pos, n)
     for neighbor in neighbors:
         clause1 = int(str(4) + str(neighbor[0]) + str(neighbor[1])) # P
         clause2 = int(str(5) + str(neighbor[0]) + str(neighbor[1])) # W
         negative_alpha = [[clause1,clause2]]
         if KB.Resolution_Algorithm(negative_alpha): # Chắc chắn an toàn
             safe_rooms.append(neighbor)
-        elif KB.Resolution_Algorithm([[-clause2]]): # Chắc chắn có wumpus
-            wumpus_rooms.append(neighbor)
         elif KB.Resolution_Algorithm([[-clause1]]): # Chắc chắn có Pit
             pit_rooms.append(neighbor)
-    return KB, safe_rooms, wumpus_rooms, pit_rooms, neighbors
+    return KB, safe_rooms, pit_rooms, neighbors, out_of_caves
 
 
 def Heuristic_Rooms(heuristic, safe_rooms, list_agent_pos):
