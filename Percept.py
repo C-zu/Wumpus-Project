@@ -3,14 +3,18 @@ def get_neighbors(pos, n):
     Kiểm tra những ô xung quanh
     '''
     neighbors = []
+    out_of_caves = []
     for dx, dy in [(1, 0), (-1,0), (0, 1), (0, -1)]:
         x, y = pos[0] + dx, pos[1] + dy
-        if (1 <= x < n and 1 <= y < n):
+        if (1 <= x <= n and 1 <= y <= n):
             neighbors.append((x, y))
-    return neighbors
+        else:
+            out_of_caves.append((x,y))
+    return neighbors, out_of_caves
+
 
 def Not_SB_Case(pos, n):
-    neighbors = get_neighbors(pos, n)
+    neighbors, _ = get_neighbors(pos, n)
     CNF = []
     for neighbor in neighbors:
         literal1 = [int('-4' + str(neighbor[0]) + str(neighbor[1]))]
@@ -20,7 +24,7 @@ def Not_SB_Case(pos, n):
     return CNF
 # Ô đang đứng có Stench
 def Stench_Case(pos, n):
-    neighbors = get_neighbors(pos, n)
+    neighbors, _ = get_neighbors(pos, n)
     literal = int('1' + str(pos[0]) + str(pos[1]))
     list_literals = []
     # clause 1
@@ -36,7 +40,7 @@ def Stench_Case(pos, n):
     return CNF
 # Ô đang đứng có Breeze
 def Breeze_Case(pos, n):
-    neighbors = get_neighbors(pos, n)
+    neighbors, _ = get_neighbors(pos, n)
     literal = int('2' + str(pos[0]) + str(pos[1]))
     list_literals = []
     # clause 1
