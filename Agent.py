@@ -24,22 +24,23 @@ def Identify_TurnType(agent_pos, agent_direction, new_pos):
         new_direction = 'U'
     elif d == (-1,0):
         new_direction = 'L'
-    else:
+    elif d == (0,-1):
         new_direction = 'D'
     # Xác định TurnType(xoay trái, phải, sau hoặc không xoay)
     type_direction = np.array(['R','U','L','D'])
     old_index = np.where(type_direction == agent_direction)[0][0]
     new_index = np.where(type_direction == new_direction)[0][0]
     temp = new_index - old_index
+    if temp < 0:
+        temp += 4
     if temp == 0:
         return 'No'
     elif temp == 1:
         return Action.TURN_LEFT
-    elif temp == -1:
-        return Action.TURN_RIGHT
-    else:
+    elif temp == 2:
         return Action.TURN_DOWN
-    
+    elif temp == 3:
+        return Action.TURN_RIGHT
 def Turn(agent_direct, type_turn):
     '''
         Hướng của Agent sau khi xoay.
@@ -161,7 +162,8 @@ def Shoot(KB, pos, cave, n, score):
     score -= 100
     return cave1, score, state, delete_list
                     
-def Grab(agent_pos, cave, score):
+def Grab(agent_pos, cave, heuristic, list_agent_pos, score):
+    heuristic1 = copy.deepcopy(heuristic)
     agent_pos1 = map_pos(agent_pos)
     x,y = agent_pos1
     # Cập nhật cave
@@ -172,7 +174,15 @@ def Grab(agent_pos, cave, score):
         cave1[x,y] = cave1[x,y].replace('G','')
     # Cập nhật điểm
     score += 100
-    return cave1, score
+    # Cập nhật heuristic
+    heuristic1[agent_pos] -= 10 # Không đi lại những ô có vàng
+    # heuristic[list_agent_pos[-1]] -= 5 # Không đi lại ô cha của có vàng (FAIL)
+    # Nếu những ô xung quanh vàng đã đi, không đi lại những ô đó (FAIL)
+    # neighbors = get_neighbors(agent_pos, 10)
+    # for neighbor in neighbors:
+    #     if neighbor in list_agent_pos:
+    #         heuristic1[neighbor] -= 5
+    return cave1, heuristic1, score
 
 def Climb(score):
     score += 10

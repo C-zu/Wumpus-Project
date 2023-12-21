@@ -15,7 +15,6 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
     score = 0 # Điểm
     heuristic = {} # Lưu heuristic của các room đã đi vào
     path = [agent_pos] # Lưu đường đi và hành động tại ô đó
-    count_wumpus = 0
     list_pit = [] # Lưu trữ danh sách các hố
     dict_bump = {} # Lưu trữ số lần Bump
     size_x = 0
@@ -31,22 +30,23 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
             print('CLIMB')
             return KB, heuristic, path, list_agent_pos, cave1, score
         # Đã giết được hết Wumpus và ăn hết vàng
-        if len(set(list_agent_pos)) + count_wumpus + len(list_pit) == n**2:
-            print(count)
+        if len(set(list_agent_pos)) + len(list_pit) == n**2:
+            print('Số bước đi: ', count)
             return KB, heuristic, path, list_agent_pos, cave1, score
         # Tìm tất cả các phòng an toàn để tiến hành di chuyển
-        KB, safe_rooms, pit_rooms, neighbors, out_of_caves = Identify_Safe_Rooms(KB, agent_pos, cave1, n)
+        KB, safe_rooms, wumpus_rooms, pit_rooms, neighbors, out_of_caves = Identify_Safe_Rooms(KB, agent_pos, cave1, n)
+        # Nêu phát hiện ra Pit mới, tiến hành thêm vào list_pit
         list_pit += pit_rooms
         list_pit = list(set(list_pit))
-        # Bắn dò
+        if existBreeze(agent_pos, cave1):
+            heuristic[agent_pos] -= 1
+        # Khi ô đó là Stench thì tiến hành bắn dò để giết Wumpus
         if existStench(agent_pos, cave1) and len(safe_rooms) < len(neighbors):
             # Những phòng không chắc nó có phải Wumpus hay không
             other_rooms = list(set(neighbors) - set(safe_rooms))
             for room in other_rooms:
                 agent_direction, path = IsTurn(agent_pos, room, agent_direction, path)
                 cave1, score, state, delete_list = Shoot(KB, room, cave1, n, score)
-                if state:
-                    count_wumpus += 1
                 path.append(Action.SHOOT)
                 if delete_list:
                     path.append(delete_list)
@@ -55,7 +55,7 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
                 if not existStench(agent_pos, cave1):
                     break
         # Xác định phòng tiếp theo
-        heuristic, room = IdentifyRoom(heuristic,safe_rooms,list_agent_pos)
+        heuristic, room = IdentifyRoom(KB, heuristic,agent_pos, cave1, safe_rooms,list_agent_pos)
         # Trước khi di chuyển thì ta sẽ tiến hành kiểm tra xem ô đó có phải là edge không, nếu là edge thì ta đâm.
         # if len(out_of_caves) == 1:
         #     for ooc in out_of_caves:
@@ -69,10 +69,9 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
         agent_direction, path = IsTurn(agent_pos, room, agent_direction, path)
         agent_pos, cave1, score, state_bump = Move_Forward(agent_pos, agent_direction, cave1, score)
         path.append(room)
-        list_agent_pos.append(room)
+        list_agent_pos.append(agent_pos)
+        # list_room.append(room)
         # Nếu tại ô đó có vàng thì ta thu thập
         if existGold(agent_pos, cave1):
-            cave1, score = Grab(agent_pos, cave1, score)
+            cave1, heuristic, score = Grab(agent_pos, cave1, heuristic, list_agent_pos, score)
             path.append(Action.GRAB)
-            # heuristic[agent_pos] -= 10
-

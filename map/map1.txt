@@ -1,11 +1,11 @@
 10
--.BS.W.BS.P.B.-.-.-.G
-B.P.BSG.-.B.-.-.-.G.-
--.B.-.-.-.G.-.G.-.-
+BG.S.W.S.G.SG.-.S.W.SG
+P.B.SG.-.SG.W.SG.-.SG.-
+BG.-.-.-.-.SG.-.G.-.-
 -.G.-.S.-.-.-.B.G.S
 G.-.S.W.SG.-.B.P.BS.W
 -.-.-.S.G.-.S.BG.-.S
 S.-.G.-.-.S.W.S.-.-
-W.S.-.-.-.-.S.S.-.G
-S.-.B.G.-.G.S.W.S.-
-A.B.P.B.-.G.-.S.-.-
+W.S.-.-.-.-.S.SG.-.G
+S.-.B.G.-.SG.S.W.S.-
+A.B.P.B.S.W.S.S.-.-
