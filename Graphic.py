@@ -92,7 +92,7 @@ def create_map(cave):
 
 
 def main():
-    n, cave, agent_pos = read_map('map/map2.txt')
+    n, cave, agent_pos = read_map('map/map1.txt')
     print(agent_pos)
     KB, heuristic, path, list_agent_pos, cave1, score = Solve_Wumpus_World((1, 1), 'R', 10, cave)
     print(score)
