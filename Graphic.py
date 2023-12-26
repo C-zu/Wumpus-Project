@@ -12,6 +12,8 @@ WIDTH, HEIGHT = 800, 800
 CELL_SIZE = 80
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255,0,0)
+GRAY = (128,128,128)
 FONT = pygame.font.Font(None, 14)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Wumpus")
@@ -29,15 +31,17 @@ stench = pygame.image.load("images/stench.png")
 gold = pygame.image.load("images/gold.png")
 pit = pygame.image.load("images/pit.png")
 door = pygame.image.load("images/door.png")
+footstep = pygame.image.load("images/footstep.png")
 
 wumpus = pygame.transform.scale(wumpus, (CELL_SIZE, CELL_SIZE))
 wumpus_die = pygame.transform.scale(wumpus_die, (CELL_SIZE, CELL_SIZE))
-agent_right = pygame.transform.scale(agent_right, (CELL_SIZE, CELL_SIZE))
-agent_left = pygame.transform.scale(agent_left, (CELL_SIZE, CELL_SIZE))
-agent_up = pygame.transform.scale(agent_up, (CELL_SIZE, CELL_SIZE))
-agent_down = pygame.transform.scale(agent_down, (CELL_SIZE, CELL_SIZE))
-agent_right_shoot = pygame.transform.scale(agent_right_shoot, (CELL_SIZE, CELL_SIZE))
-agent_left_shoot = pygame.transform.scale(agent_left_shoot, (CELL_SIZE, CELL_SIZE))
+agent_right = pygame.transform.scale(agent_right, (CELL_SIZE // 2, CELL_SIZE // 2))
+agent_left = pygame.transform.scale(agent_left, (CELL_SIZE // 2, CELL_SIZE // 2))
+agent_up = pygame.transform.scale(agent_up, (CELL_SIZE // 2, CELL_SIZE // 2))
+agent_down = pygame.transform.scale(agent_down, (CELL_SIZE // 2, CELL_SIZE // 2))
+agent_right_shoot = pygame.transform.scale(agent_right_shoot, (CELL_SIZE // 2, CELL_SIZE // 2))
+agent_left_shoot = pygame.transform.scale(agent_left_shoot, (CELL_SIZE // 2, CELL_SIZE // 2))
+footstep = pygame.transform.scale(footstep, (CELL_SIZE // 2, CELL_SIZE // 2))
 breeze = pygame.transform.scale(breeze, (CELL_SIZE, CELL_SIZE))
 stench = pygame.transform.scale(stench, (CELL_SIZE, CELL_SIZE))
 gold = pygame.transform.scale(gold, (CELL_SIZE, CELL_SIZE))
@@ -65,11 +69,17 @@ def get_neighbors(pos, n):
     return neighbors
 
 
-def create_map(cave):
+def create_map(cave,path_line):
     N = len(cave)
     for row in range(len(cave)):
         for col in range(len(cave)):
-            if (cave[row, col] != "-"):
+            pygame.draw.rect(screen, GRAY, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 0)
+            pygame.draw.rect(screen, BLACK, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
+def draw_objects(cave, path_line):
+    N = len(cave)
+    for row in range(len(cave)):
+        for col in range(len(cave)):
+            if cave[row, col] != "-" and (row, col) in path_line:
                 if "B" in cave[row, col]:
                     screen.blit(breeze, (get_map_pos_y(N, CELL_SIZE) + col * CELL_SIZE,
                                          get_map_pos_x(N, CELL_SIZE) + row * CELL_SIZE))
@@ -88,11 +98,13 @@ def create_map(cave):
                 if "P" in cave[row, col]:
                     screen.blit(pit, (get_map_pos_y(N, CELL_SIZE) + col * CELL_SIZE,
                                       get_map_pos_x(N, CELL_SIZE) + row * CELL_SIZE))
-            pygame.draw.rect(screen, BLACK, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
-
+def print_footstep(foot_step):
+    for i in foot_step:
+        screen.blit(footstep, (get_map_pos_y(10, CELL_SIZE) + i[1] * CELL_SIZE,
+                            get_map_pos_x(10, CELL_SIZE) + i[0] * CELL_SIZE))
 
 def main():
-    n, cave, agent_pos = read_map('map/map2.txt')
+    n, cave, agent_pos = read_map('map/map1.txt')
     print(agent_pos)
     KB, heuristic, path, list_agent_pos, cave1, score = Solve_Wumpus_World((1, 1), 'R', 10, cave)
     print(score)
@@ -113,17 +125,26 @@ def main():
     agent = agent_right
     agent_dir = "RIGHT"
     path_i = 0
+    path_line = []
+    foot_step = []
     while (run):
         if (path_i < len(path)):
-            screen.fill(WHITE)
-            create_map(cave)
+            create_map(cave,path_line)
             if type(path[path_i]) is tuple:
                 current_path = path[path_i]
+                path_line.append(path[path_i])
+                foot_step = path_line.copy()
+                while (len(foot_step) > 3):
+                    foot_step.pop(0)
+                for i in path_line:
+                    pygame.draw.rect(screen, WHITE, (i[1] * CELL_SIZE, i[0] * CELL_SIZE, CELL_SIZE, CELL_SIZE), 0)
                 screen.blit(agent, (get_map_pos_y(10, CELL_SIZE) + path[path_i][1] * CELL_SIZE,
                                     get_map_pos_x(10, CELL_SIZE) + path[path_i][0] * CELL_SIZE))
-                time.sleep(0.1)
+                time.sleep(0.5)
             elif type(path[path_i]) is dict:
-                time.sleep(0.2)
+                time.sleep(0.5)
+                for i in path_line:
+                    pygame.draw.rect(screen, WHITE, (i[1] * CELL_SIZE, i[0] * CELL_SIZE, CELL_SIZE, CELL_SIZE), 0)
                 if path[path_i]['wumpus_pos']:
                     for i in path[path_i]['wumpus_pos']:
                         screen.blit(wumpus_die, (get_map_pos_y(10, CELL_SIZE) + i[1] * CELL_SIZE,
@@ -136,6 +157,8 @@ def main():
 
 
             elif type(path[path_i]) is not tuple:
+                for i in path_line:
+                    pygame.draw.rect(screen, WHITE, (i[1] * CELL_SIZE, i[0] * CELL_SIZE, CELL_SIZE, CELL_SIZE), 0)
                 if path[path_i].value in direction_changes:
                     agent_dir, agent = direction_changes[path[path_i].value][agent_dir]
                 elif (path[path_i].value == 3):
@@ -147,6 +170,8 @@ def main():
                         agent = agent_left_shoot
                     else:
                         agent = agent_right_shoot
+            print_footstep(foot_step[:-1])
+            draw_objects(cave,  path_line)
             screen.blit(agent, (get_map_pos_y(10, CELL_SIZE) + current_path[1] * CELL_SIZE,
                                     get_map_pos_x(10, CELL_SIZE) + current_path[0] * CELL_SIZE))
             path_i += 1
