@@ -71,7 +71,7 @@ def IsTurn(agent_pos, pos, agent_direction, path):
         path.append(TypeTurn)
     return agent_direction, path
 
-def Move_Forward(agent_pos, agent_direction, cave, score):
+def Move_Forward(agent_pos, agent_direction, cave, score, n):
     '''Di chuyển thẳng theo direction'''
     if agent_direction == 'R':
         dx, dy = (1,0)
@@ -84,8 +84,8 @@ def Move_Forward(agent_pos, agent_direction, cave, score):
     # Vị trí mới của Agent
     x, y = agent_pos
     new_x, new_y = x + dx, y + dy
-    agent_pos1 = map_pos(agent_pos)
-    new_pos1 = map_pos((new_x,new_y))
+    agent_pos1 = map_pos(agent_pos,n)
+    new_pos1 = map_pos((new_x,new_y),n)
     # Kiểm tra thử có khi di chuyển có va vào tường không
     if (new_x > 10 or new_x <1) or (new_y > 10 or new_y < 1):
         return agent_pos, cave, score, True
@@ -110,7 +110,7 @@ def Shoot(KB, pos, cave, n, score):
     '''
     Bắn cung, có thể trúng Wumpus hoặc không :v
     '''
-    pos1 = map_pos(pos)
+    pos1 = map_pos(pos,n)
     state = False 
     cave1 = copy.deepcopy(cave)
     delete_list = {}
@@ -131,14 +131,14 @@ def Shoot(KB, pos, cave, n, score):
             del_stench_flag = True
             check_if_wumpus,_ = get_neighbors(stench,n)
             for if_wumpus in check_if_wumpus:
-                if_wumpus1 = map_pos(if_wumpus)
+                if_wumpus1 = map_pos(if_wumpus,n)
                 if cave1[if_wumpus1[0],if_wumpus1[1]] == 'W':
                     del_stench_flag = False
                     break
 
             if del_stench_flag:
                 # Cập nhật map
-                    stench1 = map_pos(stench)   
+                    stench1 = map_pos(stench,n)
                     list_stench.append((stench1[0],stench1[1]))
                     if cave1[stench1[0],stench1[1]] == 'S':
                         cave1[stench1[0],stench1[1]] = '-'
@@ -162,9 +162,9 @@ def Shoot(KB, pos, cave, n, score):
     score -= 100
     return cave1, score, state, delete_list
                     
-def Grab(agent_pos, cave, heuristic, list_agent_pos, score):
+def Grab(agent_pos, cave, heuristic, score,n):
     heuristic1 = copy.deepcopy(heuristic)
-    agent_pos1 = map_pos(agent_pos)
+    agent_pos1 = map_pos(agent_pos, n)
     x,y = agent_pos1
     # Cập nhật cave
     cave1 = np.copy(cave)
@@ -176,12 +176,6 @@ def Grab(agent_pos, cave, heuristic, list_agent_pos, score):
     score += 100
     # Cập nhật heuristic
     heuristic1[agent_pos] -= 10 # Không đi lại những ô có vàng
-    # heuristic[list_agent_pos[-1]] -= 5 # Không đi lại ô cha của có vàng (FAIL)
-    # Nếu những ô xung quanh vàng đã đi, không đi lại những ô đó (FAIL)
-    # neighbors = get_neighbors(agent_pos, 10)
-    # for neighbor in neighbors:
-    #     if neighbor in list_agent_pos:
-    #         heuristic1[neighbor] -= 5
     return cave1, heuristic1, score
 
 def Climb(score):
