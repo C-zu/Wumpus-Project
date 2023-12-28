@@ -1,3 +1,3 @@
-from Graphic import *
+from menu import *
 if __name__ == "__main__":
-    main()
+    main_menu()

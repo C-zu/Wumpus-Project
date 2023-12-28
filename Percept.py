@@ -25,32 +25,18 @@ def Not_SB_Case(pos, n):
 # Ô đang đứng có Stench
 def Stench_Case(pos, n):
     neighbors, _ = get_neighbors(pos, n)
-    literal = int('1' + str(pos[0]) + str(pos[1]))
-    list_literals = []
     # clause 1
-    clause1 = [-literal]
+    clause1 = []
     for neighbor in neighbors:
         literal1 = int('5' + str(neighbor[0]) + str(neighbor[1]))
         clause1.append(literal1)
-        list_literals.append(-literal1)
-    # clause 2 -> n
-    CNF = [clause1]
-    for i in list_literals:
-        CNF.append([literal,i])
-    return CNF
+    return [clause1]
 # Ô đang đứng có Breeze
 def Breeze_Case(pos, n):
     neighbors, _ = get_neighbors(pos, n)
-    literal = int('2' + str(pos[0]) + str(pos[1]))
-    list_literals = []
     # clause 1
-    clause1 = [-literal]
+    clause1 = []
     for neighbor in neighbors:
         literal1 = int('4' + str(neighbor[0]) + str(neighbor[1]))
         clause1.append(literal1)
-        list_literals.append(-literal1)
-    # clause 2 -> n
-    CNF = [clause1]
-    for i in list_literals:
-        CNF.append([literal,i])
-    return CNF
+    return [clause1]
