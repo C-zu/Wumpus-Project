@@ -1,8 +1,18 @@
 from KnowledgeBase import *
-import numpy as np
 from Agent import *
 from Room import *
-
+from Astar import *
+import numpy as np
+# Nếu có 1 ô đã đi nhiều hơn 5 lần thì tiến hành quay về nhà
+def stop_condition(list_agent_pos,n):
+    count_stop = {}
+    for pos in list_agent_pos:
+        if pos not in count_stop.keys():
+            count_stop[pos] = 0
+        else:
+            count_stop[pos] += 1
+    result = [key for key, value in count_stop.items() if value >= n]
+    return len(result)>0
 def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
     '''
         Mục tiêu: Ăn hết vàng và giết hết Wumpus
@@ -22,9 +32,20 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
     count_arrow = 0
     while(True):
         count += 1
-        # print(agent_pos, agent_direction)
+        # Nếu tại ô đó có vàng thì ta thu thập
+        if existGold(agent_pos, cave1,n):
+            cave1, heuristic, score = Grab(origin_agent, agent_pos, cave1, heuristic, score, n)
+            path.append(Action.GRAB)
         # Nếu ô bắt đầu có Breeze hay Stench, nhảy ra khỏi động cho an toàn
         if existStench(origin_agent, cave1,n) or existBreeze(origin_agent, cave1,n):
+            score = Climb(score)
+            path.append(Action.CLIMB)
+            print('CLIMB')
+            return KB, heuristic, path, list_agent_pos, cave1, score
+        # Nếu đi lâu mà không thu được gì thì tiến hành quay về để CLIMB
+        if stop_condition(list_agent_pos,n):
+            path_back = astar_with_heuristic(cave, agent_pos, origin_agent, list_pit)
+            path += path_back
             score = Climb(score)
             path.append(Action.CLIMB)
             print('CLIMB')
@@ -33,9 +54,12 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
         if len(set(list_agent_pos)) + len(list_pit) == n**2:
             print('Số bước đi: ', count)
             print('Số lần bắn: ', count_arrow)
-            print('Pit: ', list_pit)
+            print('Số lượng Pit: ', len(list_pit))
             print('Số lượng wumpus: ', count_wumpus)
-            print(len(set(list_agent_pos)))
+            # Tìm đường quay về origin_agent
+            path_back = astar_with_heuristic(cave, agent_pos, origin_agent, list_pit)
+            path += path_back
+            print(path_back)
             return KB, heuristic, path, list_agent_pos, cave1, score
         # Tìm tất cả các phòng an toàn để tiến hành di chuyển
         KB, safe_rooms, wumpus_rooms, pit_rooms, neighbors, out_of_caves = Identify_Safe_Rooms(KB, agent_pos, cave1, n)
@@ -68,7 +92,3 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
         agent_pos, cave1, score, state_bump = Move_Forward(agent_pos, agent_direction, cave1, score, n)
         path.append(room)
         list_agent_pos.append(agent_pos)
-        # Nếu tại ô đó có vàng thì ta thu thập
-        if existGold(agent_pos, cave1,n):
-            cave1, heuristic, score = Grab(agent_pos, cave1, heuristic, score, n)
-            path.append(Action.GRAB)

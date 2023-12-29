@@ -1,7 +1,7 @@
 6
 S.W.GS.-.-.A
 -.S.-.G.S.-
--.G.-.S.W.S
-B.-.S.G.S.-
-P.BS.W.S.-.BG
-B.G.S.-.B.P
+-.G.-.S.W.SB
+B.-.S.G.SBG.P
+P.BS.W.SBG.P.BG
+B.G.GS.G.BG.P

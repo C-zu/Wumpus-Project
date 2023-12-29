@@ -162,7 +162,7 @@ def Shoot(KB, pos, cave, n, score):
     score -= 100
     return cave1, score, state, delete_list
                     
-def Grab(agent_pos, cave, heuristic, score,n):
+def Grab(original_pos, agent_pos, cave, heuristic, score,n):
     heuristic1 = copy.deepcopy(heuristic)
     agent_pos1 = map_pos(agent_pos, n)
     x,y = agent_pos1
@@ -175,7 +175,8 @@ def Grab(agent_pos, cave, heuristic, score,n):
     # Cập nhật điểm
     score += 100
     # Cập nhật heuristic
-    heuristic1[agent_pos] -= 10 # Không đi lại những ô có vàng
+    if agent_pos != original_pos:
+        heuristic1[agent_pos] -= 10 # Không đi lại những ô có vàng
     return cave1, heuristic1, score
 
 def Climb(score):

@@ -1,8 +1,8 @@
 7
 -.G.-.S.-.-.-
 -.-.S.W.SGB.-.B
--.G.S.SB.P.B.-
-S.S.WG.S.GB.S.-
+-.G.S.SB.P.B.P
+S.S.WG.S.GB.S.B
 W.S.S.-.S.W.S
 S.-.B.-.-.GS.B
 A.BG.P.B.-.B.P

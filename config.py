@@ -74,10 +74,10 @@ def read_map(path):
     with open(path) as f:
         n= int(f.readline().strip())
     df = pd.read_csv(path,skiprows=1,header=None)
-    cave = np.vstack(df.apply(lambda x:x.values[0].split('.'),axis = 1).values)
+    cave = np.vstack(df.apply(lambda x:x.values[0].split('.'), axis = 1).values)
     # Lấy agent_pos
-    pos_x = np.where(cave == 'A')[0][0]
-    pos_y = np.where(cave == 'A')[1][0]
+    pos_x = np.where(np.char.find(cave, 'A') != -1)[0][0]
+    pos_y = np.where(np.char.find(cave, 'A') != -1)[1][0]
     agent_pos = map_pos2((pos_x, pos_y),n)
     return n, cave, agent_pos
 
