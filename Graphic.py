@@ -64,11 +64,7 @@ def print_footstep(foot_step,n):
 def main(maptext):
     screen.blit(BG, (0, 0))
     n, cave, agent_pos = read_map(maptext)
-    print(n)
-    print(agent_pos)
-    KB, heuristic, path, list_agent_pos, cave1, score = Solve_Wumpus_World(agent_pos, 'R', n, cave)
-    print(score)
-    print(heuristic)
+    KB, heuristic, path, list_agent_pos, cave1, list_score = Solve_Wumpus_World(agent_pos, 'R', n, cave)
     for i in range(len(path)):
         if type(path[i]) is tuple:
             path[i] = map_pos(path[i],n)
