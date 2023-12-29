@@ -22,7 +22,6 @@ breeze = pygame.image.load("images/breeze.png")
 stench = pygame.image.load("images/stench.png")
 gold = pygame.image.load("images/gold.png")
 pit = pygame.image.load("images/pit.png")
-door = pygame.image.load("images/door.png")
 footstep = pygame.image.load("images/footstep.png")
 
 wumpus = pygame.transform.scale(wumpus, (CELL_SIZE, CELL_SIZE))
@@ -38,10 +37,13 @@ breeze = pygame.transform.scale(breeze, (CELL_SIZE, CELL_SIZE))
 stench = pygame.transform.scale(stench, (CELL_SIZE, CELL_SIZE))
 gold = pygame.transform.scale(gold, (CELL_SIZE, CELL_SIZE))
 pit = pygame.transform.scale(pit, (CELL_SIZE, CELL_SIZE))
-door = pygame.transform.scale(door, (CELL_SIZE, CELL_SIZE))
+door_list = [pygame.transform.scale(pygame.image.load("images/door_1.png"), (CELL_SIZE, CELL_SIZE)),
+            pygame.transform.scale(pygame.image.load("images/door_2.png"), (CELL_SIZE, CELL_SIZE)),
+            pygame.transform.scale(pygame.image.load("images/door_3.png"), (CELL_SIZE, CELL_SIZE)),
+            pygame.transform.scale(pygame.image.load("images/door_4.png"), (CELL_SIZE, CELL_SIZE))]
 
 BG = pygame.transform.scale(pygame.image.load("images/background.png"),(1280,720))
-
+victory_bg = pygame.transform.scale(pygame.image.load("images/victory.png"),(1280,720))
 def get_font(size):
   return pygame.font.Font("font/font.ttf", size)
 
