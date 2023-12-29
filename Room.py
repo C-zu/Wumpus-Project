@@ -1,5 +1,6 @@
 from config import *
 from Percept import *
+from KnowledgeBase import *
 import copy
 
 
@@ -50,48 +51,77 @@ def NoSB( agent_pos, cave, n):
     info_room = Info_Room(agent_pos, cave, n)
     return (info_room['Stench'] == 0 and info_room['Breeze'] == 0)
 
-def is_filter(KB_temp,CNF):
+def is_delete(KB_temp,CNF):
     for literal in CNF:
         if [-literal] not in KB_temp:
             return False
     return True
 
-def filter_KB(KB):
+def delete_KB(KB):
     for CNF in KB.KB:
-        if len(CNF) > 1 and is_filter(KB.KB,CNF):
+        if len(CNF) > 1 and is_delete(KB.KB,CNF):
             KB.del_clause(CNF)
     return KB
 
+def get_clauses_in_KB(KB, pos):
+    '''
+    Lấy ra tất cả những clause liên quan đến pos có trong KB
+    '''
+    list_clauses = []
+    literial1 = int(str(4) + str(pos[0]) + str(pos[1]))
+    literial2 = int(str(5) + str(pos[0]) + str(pos[1]))
+    for clause in KB:
+        if (literial1 in clause) or (-literial1 in clause) or (literial2 in clause) or (-literial2 in clause):
+            list_clauses.append(clause)
+    return list_clauses
+def filter_KB(list_KB, neighbor,n):
+    additional_KB = get_clauses_in_KB(list_KB, neighbor)
+    neighbors,_ = get_neighbors(neighbor, n)
+    for sub_neighbor in neighbors:
+        additional_KB += get_clauses_in_KB(list_KB, sub_neighbor)
+    return additional_KB
 def Identify_Safe_Rooms( KB, agent_pos, cave, n):
     info_room = Info_Room(agent_pos, cave,n)
     list_CNF = [Literals_Room(info_room, agent_pos)[2:]]
+    list_new_KB = [Literals_Room(info_room, agent_pos)[2:]]
     if NoSB(agent_pos, cave,n):
         list_CNF.append(Not_SB_Case(agent_pos, n))
+        list_new_KB.append(Not_SB_Case(agent_pos, n))
     if existStench(agent_pos, cave,n):
         list_CNF.append(Stench_Case(agent_pos, n))
+        list_new_KB.append(Stench_Case(agent_pos, n))
     if existBreeze(agent_pos, cave,n):
         list_CNF.append(Breeze_Case(agent_pos, n))
+        list_new_KB.append(Breeze_Case(agent_pos, n))
     for CNF_i in list_CNF:
         for clause in CNF_i:
             KB.add_clause(clause)
-    KB = filter_KB(KB)
+    KB = delete_KB(KB)
+    # Get neighbors
+    neighbors, out_of_caves = get_neighbors(agent_pos, n)
+    # Tiến hành loại bỏ các KB vô nghĩa để tăng thời gian xử lí
+    new_KB = KnowledgeBase()
+    for neighbor in neighbors:
+        list_new_KB.append(filter_KB(KB.KB, neighbor,n))
+    for KB1 in list_new_KB:
+        for clause in KB1:
+            new_KB.add_clause(clause)
     # Xác định các ô an toàn để đi
     safe_rooms = []
     wumpus_rooms = []
     pit_rooms = []
-    neighbors, out_of_caves = get_neighbors(agent_pos, n)
     for neighbor in neighbors:
         clause1 = int(str(4) + str(neighbor[0]) + str(neighbor[1])) # P
         clause2 = int(str(5) + str(neighbor[0]) + str(neighbor[1])) # W
         negative_alpha = [[clause1,clause2]]
-        if KB.Resolution(negative_alpha): # Chắc chắn an toàn
+        if new_KB.Resolution(negative_alpha): # Chắc chắn an toàn
             safe_rooms.append(neighbor)
             KB.add_clause([-clause1])
             KB.add_clause([-clause2])
-        elif KB.Resolution([[-clause1]]): # Chắc chắn có Pit
+        elif new_KB.Resolution([[-clause1]]): # Chắc chắn có Pit
             pit_rooms.append(neighbor)
             KB.add_clause([clause1])
-        elif KB.Resolution([[-clause2]]): # Chắc chắn có wumpus
+        elif new_KB.Resolution([[-clause2]]): # Chắc chắn có wumpus
             wumpus_rooms.append(neighbor)
     return KB, safe_rooms, wumpus_rooms, pit_rooms, neighbors, out_of_caves
 
