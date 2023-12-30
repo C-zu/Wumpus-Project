@@ -1,6 +1,5 @@
 from enum import Enum
 import copy
-import numpy as np
 from Percept import *
 from config import *
 
@@ -125,11 +124,11 @@ def Shoot(KB, pos, cave, n, score):
             cave1[pos1[0],pos1[1]] = cave1[pos1[0],pos1[1]].replace('W','')
             list_w.append((pos1[0],pos1[1]))
 
-        list_stenchs,_ = get_neighbors(pos,n)
+        list_stenchs = get_neighbors(pos,n)
 
         for stench in list_stenchs:
             del_stench_flag = True
-            check_if_wumpus,_ = get_neighbors(stench,n)
+            check_if_wumpus = get_neighbors(stench,n)
             for if_wumpus in check_if_wumpus:
                 if_wumpus1 = map_pos(if_wumpus,n)
                 if cave1[if_wumpus1[0],if_wumpus1[1]] == 'W':

@@ -63,7 +63,9 @@ def print_footstep(foot_step,n):
 def main(maptext):
     n, cave, agent_pos = read_map(maptext)
     KB, heuristic, path, list_agent_pos, cave1, list_score = Solve_Wumpus_World(agent_pos, 'R', n, cave)
+    print(list_score)
     print(len(list_score))
+    print(len(list_agent_pos))
     for i in range(len(path)):
         if type(path[i]) is tuple:
             path[i] = map_pos(path[i],n)
@@ -102,9 +104,9 @@ def main(maptext):
                 text = get_font(30).render(f"Score: {list_score[score_i]}", True, BLACK)
                 screen.blit(text, (10, 10))
                 if score_i < len_score-1: score_i += 1
-                time.sleep(0.25)
+                time.sleep(0.15)
             elif type(path[path_i]) is dict:
-                time.sleep(0.25)
+                time.sleep(0.15)
                 text = get_font(30).render(f"Score: {list_score[score_i-1]}", True, BLACK)
                 screen.blit(text, (10, 10))
                 for i in path_line:
@@ -147,7 +149,6 @@ def main(maptext):
                         agent = agent_right_shoot
                     text = get_font(30).render(f"Score: {list_score[score_i]}", True, BLACK)
                     screen.blit(text, (10, 10))
-                    if score_i < len_score-1: score_i += 1
             print_footstep(foot_step[:-1],n)
             draw_objects(cave,  path_line)
             screen.blit(agent, (get_map_pos_y(n, CELL_SIZE) + (current_path[1]+0.25) * CELL_SIZE,

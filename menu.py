@@ -6,7 +6,7 @@ pygame.init()
 
 pygame.display.set_caption("Wumpus World")
 map_pos = 0
-change_map_list = ['map/map1.txt','map/map2.txt','map/map3.txt','map/map4.txt','map/map5.txt']
+change_map_list = ['map/map1.txt','map/map2.txt','map/map3.txt','map/map4.txt','map/map5.txt', 'map/map6.txt']
 
 def display_map(maptext,screen,CELL_SIZE):
   wumpus1 = pygame.image.load("images/wumpus.png")

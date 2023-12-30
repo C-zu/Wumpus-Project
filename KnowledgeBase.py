@@ -97,14 +97,3 @@ class KnowledgeBase:
         clause_list = copy.deepcopy(self.KB)
         state = pl_resolution(clause_list,neg_alpha)
         return state
-    # def Resolution_Algorithm(self, negative_alpha):
-    #     g = Glucose3()
-    #     clause_list = copy.deepcopy(self.KB)
-    #     for it in clause_list:
-    #         g.add_clause(it)
-    #     for it in negative_alpha:
-    #         g.add_clause(it)
-    #     sol = g.solve()
-    #     if sol:
-    #         return False
-    #     return True
