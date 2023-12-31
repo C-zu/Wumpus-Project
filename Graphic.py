@@ -1,18 +1,11 @@
-import pygame
-import pandas as pd
 import time
 from Game import *
-from KnowledgeBase import *
-from Percept import *
-from Room import *
-from Agent import *
 from config import *
 
 pygame.init()
 FONT = pygame.font.Font(None, 14)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Wumpus")
-
 
 
 def get_neighbors(pos, n):
@@ -22,7 +15,7 @@ def get_neighbors(pos, n):
     neighbors = []
     for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
         x, y = pos[0] + dx, pos[1] + dy
-        if (1 <= x < n and 1 <= y < n):
+        if (1 <= x <= n and 1 <= y <= n):
             neighbors.append((x, y))
     return neighbors
 
