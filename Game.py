@@ -27,9 +27,10 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
     heuristic = {} # Lưu heuristic của các room đã đi vào
     path = [agent_pos] # Lưu đường đi và hành động tại ô đó
     list_pit = [] # Lưu trữ danh sách các hố
-    count_wumpus = 0
+    
     # Tìm vàng thôi
     count = 0
+    count_wumpus = 0
     count_arrow = 0
     while(True):
         count += 1
@@ -55,6 +56,8 @@ def Solve_Wumpus_World(agent_pos, agent_direction, n,cave):
             score = Climb(score)
             list_score[-1] = score
             path.append(Action.CLIMB)
+            print('Num_arrow: ', count_arrow)
+            print('Num_wumpus: ', count_wumpus)
             return KB, heuristic, path, list_agent_pos, cave1, list_score
         # Đã giết được hết Wumpus và ăn hết vàng
         if len(set(list_agent_pos)) + len(list_pit) == n**2:

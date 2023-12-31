@@ -54,15 +54,18 @@ def print_footstep(foot_step,n):
                 get_map_pos_x(n, CELL_SIZE) + (i[0] + 0.25) * CELL_SIZE))
 
 def main(maptext):
+    
     n, cave, agent_pos = read_map(maptext)
+    start_time = time.time()
     KB, heuristic, path, list_agent_pos, cave1, list_score = Solve_Wumpus_World(agent_pos, 'R', n, cave)
-    print(list_score)
-    print(len(list_score))
-    print(len(list_agent_pos))
+    end_time = time.time()
+    print('List score: ',list_score)
+    print('Num moves: ',len(list_agent_pos))
     for i in range(len(path)):
         if type(path[i]) is tuple:
             path[i] = map_pos(path[i],n)
-    print(len(path))
+    print('Num actions: ',len(path))
+    print('Time to solve: ', end_time - start_time)
     direction_changes = {
         0: {"RIGHT": ("UP", agent_up), "LEFT": ("DOWN", agent_down), "UP": ("LEFT", agent_left),
             "DOWN": ("RIGHT", agent_right)},
